@@ -15,8 +15,9 @@ class Player(models.Model):
 class Game(models.Model):
     team_a = models.CharField(max_length=65)
     team_b = models.CharField(max_length=65)
-    odds_a = models.FloatField(null=True,blank=True)
-    odds_b = models.FloatField(null=True,blank=True)
+    odds_a_win = models.FloatField(null=True,blank=True)
+    odds_b_win = models.FloatField(null=True,blank=True)
+    odds_draw = models.FloatField(null=True,blank=True)
     match_date = models.DateTimeField('date published')
     goals_a = models.IntegerField(null=True,blank=True)
     goals_b = models.IntegerField(null=True,blank=True)
