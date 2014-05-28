@@ -1,12 +1,28 @@
 {% extends 'base.html' %}
+{% block section-title %}Predictions
+<span class="pull-right">
+<span style="font-size:.5em">{{ user }}</span>
+<button class="btn btn-primary pdull-right" role="button" onclick="$('#form').submit();">Save Updates</button>
+</span>
+{% endblock %}
 {% block maincontainer %}
 
-{% if not_recognised %}
-
-{% else %}
-
+<form method="post" id="form" autocomplete="off" >
+{% csrf_token %}
+<table class="table table-condensed table-striped">
 {% for game in games %}
-{{ game.team_a }} v {{ game.team_b }}<br>
+<tr>
+<td style="font-size:.8em;color:#444">{{ game.match_date }}</td>
+<td class="text-right">{{ game.team_a }}</td>
+<td><select name="game{{ game.id }}_a">{% for i in "xxxxxxxxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_a == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
+
+<td>v</td>
+<td><select name="game{{ game.id }}_b" >{% for i in "xxxxxxxxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_b == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
+
+<td>{{ game.team_b }}</td>
+</tr>
 {% endfor %}
-{% endif %}
+</table>
+</form>
+
 {% endblock %}

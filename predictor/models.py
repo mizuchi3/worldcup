@@ -18,7 +18,7 @@ class Game(models.Model):
     odds_a_win = models.FloatField(null=True,blank=True)
     odds_b_win = models.FloatField(null=True,blank=True)
     odds_draw = models.FloatField(null=True,blank=True)
-    match_date = models.DateTimeField('date published')
+    match_date = models.DateTimeField()
     goals_a = models.IntegerField(null=True,blank=True)
     goals_b = models.IntegerField(null=True,blank=True)
     scorer = models.ManyToManyField(Player,through='GoalCount',default=None,blank=True)
@@ -48,7 +48,7 @@ class BestPlayer(models.Model):
 		db_table = 'bestplayer'
 
 class UserInfo(models.Model):
-	user = models.ForeignKey(User)
+	user = models.ForeignKey(User, unique=True)
 	paid = models.BooleanField(default=False)
 	keyphrase = models.CharField(max_length=12)
 	class Meta:
