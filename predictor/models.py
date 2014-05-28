@@ -47,4 +47,11 @@ class BestPlayer(models.Model):
 	class Meta:
 		db_table = 'bestplayer'
 
+class UserInfo(models.Model):
+	user = models.ForeignKey(User)
+	paid = models.BooleanField(default=False)
+	keyphrase = models.CharField(max_length=12)
+	class Meta:
+		db_table = 'userinfo'
+
 

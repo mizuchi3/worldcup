@@ -22,10 +22,12 @@ class PredictionAdmin(admin.ModelAdmin):
 class BestPlayerAdmin(admin.ModelAdmin):
 	list_display = ('user', 'player')
 
+class UserInfoAdmin(admin.ModelAdmin):
+	list_display = ('user','keyphrase','paid')
 
 
 admin.site.register(Player,PlayerAdmin)
 admin.site.register(Game,GameAdmin)
 admin.site.register(Prediction,PredictionAdmin)
 admin.site.register(BestPlayer,BestPlayerAdmin)
-
+admin.site.register(UserInfo,UserInfoAdmin)

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block maincontainer %}
+
+{% if not_recognised %}
+
+{% else %}
+
+{% for game in games %}
+{{ game.team_a }} v {{ game.team_b }}<br>
+{% endfor %}
+{% endif %}
+{% endblock %}
