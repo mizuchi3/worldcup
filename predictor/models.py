@@ -50,7 +50,7 @@ class BestPlayer(models.Model):
 class UserInfo(models.Model):
 	user = models.ForeignKey(User, unique=True)
 	paid = models.BooleanField(default=False)
-	keyphrase = models.CharField(max_length=12)
+	keyphrase = models.CharField(max_length=12,unique=True)
 	class Meta:
 		db_table = 'userinfo'
 

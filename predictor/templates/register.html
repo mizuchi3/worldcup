@@ -1,16 +1,26 @@
 {% extends 'base.html' %}
-{% block section-title %}Registration{% endblock %}
+{% block section-title %}
+Registration /
+<a href="{% url 'predictor.views.predict' %}" class="navbar-link active" style="color:#BBB">Games</a> / 
+<a href="{% url 'predictor.views.scores' %}" class="navbar-link active" style="color:#BBB">Scores</a>
+{% endblock %}
 {% block maincontainer %}
 
+
 <div class="jumbotron">
+{% if registered %}
+  <h2>Thanks for registering for BC2_geeks 2014 World Cup!</h2>
+  <h4>Please use the link sent to you via email when you want to make match predictions</h4>
+{% else %}
   <h1>Join the BC2_geeks 2014 World Cup!</h1>
-  
   <form class="form-inline" role="form" method="POST">
   <label for="inputEmail1">Email address</label>
     <input name="email" style="width:300px" type="email" class="form-control" id="inputEmail1" placeholder="Enter email">
 	<button class="btn btn-primary btn-lg" role="button">Register</button>
 	{% csrf_token %}
   </form>
+{% endif %}
+
 </div>
 
 

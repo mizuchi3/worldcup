@@ -1,25 +1,41 @@
 {% extends 'base.html' %}
-{% block section-title %}Predictions
+{% block section-title %}
+
+Games / <a href="{% url 'predictor.views.scores' %}" class="navbar-link active" style="color:#BBB">Scores</a>
 <span class="pull-right">
-<span style="font-size:.5em">{{ user }}</span>
-<button class="btn btn-primary pdull-right" role="button" onclick="$('#form').submit();">Save Updates</button>
+{% if user %}<span style="font-size:.5em">{{ user.first_name|default:user.username }}</span>
+<button class="btn btn-primary" role="button" onclick="$('#form').submit();">Save Updates</button>{% endif %}
 </span>
 {% endblock %}
 {% block maincontainer %}
 
+{% if updates_made %}
+<div id="message" class="alert alert-success text-center">Updates were saved for {{ user.first_name|default:user.username }}</div>
+<script type="text/javascript">
+setTimeout(function(){$('#message').slideToggle('slow');},3000);
+</script>
+{% endif %}
 <form method="post" id="form" autocomplete="off" >
 {% csrf_token %}
 <table class="table table-condensed table-striped">
 {% for game in games %}
 <tr>
-<td style="font-size:.8em;color:#444">{{ game.match_date }}</td>
-<td class="text-right">{{ game.team_a }}</td>
-<td><select name="game{{ game.id }}_a">{% for i in "xxxxxxxxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_a == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
+<td class="hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
+<td class="text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
 
+{% if game.open %}
+<td class="text-center"><select name="game{{ game.id }}_a" id="game{{ game.id }}_a">{% for i in "xxxxxxxxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_a == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
 <td>v</td>
-<td><select name="game{{ game.id }}_b" >{% for i in "xxxxxxxxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_b == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
+<td class="text-center"><select name="game{{ game.id }}_b" >{% for i in "xxxxxxxxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_b == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
+{% else %}
+<td class="text-center">{{ game.prediction.predict_a }} {% if game.goals_a|yesno:"2,1," %}<strong>{{ game.goals_a }}</strong>{% endif %}</td>
+<td> v </td>
+<td class="text-center">{% if game.goals_b|yesno:"2,1," %}<strong>{{ game.goals_b }}</strong>{% endif %}
+	{{ game.prediction.predict_b }}</td>
+{% endif %}
 
-<td>{{ game.team_b }}</td>
+<td><label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
+<td title="points awarded">{% if game.prediction.points_awarded|yesno:"2,1," %}<strong>{{ game.prediction.points_awarded|floatformat:"0" }}</strong>{% endif %}</td>
 </tr>
 {% endfor %}
 </table>

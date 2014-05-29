@@ -10,15 +10,25 @@
 </head>
 
 <body>
-	<div class="container">
-		<div class="panel panel-primary">
-		      <div class="panel-heading  navbar-fixed-top" style="margin-left:16px;margin-right:16px;padding-left:24px;padding-right:24px;">
-		        <h3 class="panel-title" style="font-size:28px;">{% block section-title %}{% endblock %}</h3>
-		      </div>
-		      <div class="panel-body">
-		     {% block maincontainer %}{% endblock %}
-		      </div>
-		 </div>
+<div class="container">
+	<div class="panel panel-primary">
+		<div class="panel-heading  navbar-fixed-top" style="margin-left:16px;margin-right:16px;padding-left:24px;padding-right:24px;">
+			<h3 class="panel-title" style="font-size:28px;">{% block section-title %}{% endblock %}</h3>
+		</div>
+		<div class="panel-body">{% block maincontainer %}{% endblock %}</div>
+	</div>
+	<div class="panel panel-info">
+		<div class="panel-heading">
+		<h3 class="panel-title">Points awarded as follows:</h3>
+		</div>
+      	<div class="panel-body">
+        	<table class="table">
+				<tr><td>For correct outcome of game (winning team or draw) </td><td>3 points</td></tr>
+				<tr><td>For correct number of goals per team</td><td>2 points</td></tr>
+			</table>
+			Therefore, it is possible to score 0, 2, 3, or a maximum of 7 points per game.
+     	</div>
+    </div>
 </div>
 <script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
 </body>

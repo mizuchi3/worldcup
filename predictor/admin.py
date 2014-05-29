@@ -11,6 +11,7 @@ class ScorerInline(admin.TabularInline):
 
 class GameAdmin(admin.ModelAdmin):
 	list_display=('team_a','team_b','odds_a_win','odds_b_win','odds_draw','match_date','goals_a','goals_b')
+	ordering = ('match_date',)
 	inlines = [
         ScorerInline,
     ]
