@@ -17,9 +17,9 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 {% endif %}
 <form method="post" id="form" autocomplete="off" >
 {% csrf_token %}
-<table class="table table-condensed table-striped">
+<table class="table table-condensed table-hover">
 {% for game in games %}
-<tr>
+<tr onclick="$('.allpredictions{{ game.id}}').slideToggle('slow');" style="cursor:pointer">
 <td class="hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
 <td class="text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
 
@@ -37,6 +37,17 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 <td><label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
 <td title="points awarded">{% if game.prediction.points_awarded|yesno:"2,1," %}<strong>{{ game.prediction.points_awarded|floatformat:"0" }}</strong>{% endif %}</td>
 </tr>
+{% for p in game.allpredictions %}
+<tr class="allpredictions{{game.id}}" style="display:none">
+<td class="hidden-xs"></td>
+<td clas="text-right">{{ p.user.first_name }}</td>
+<td class="text-center">{{ p.predict_a }}</td>
+<td></td>
+<td class="text-center">{{ p.predict_b }}</td>
+<td></td>
+<td>{{ p.points_awarded|floatformat:"0" }}</td>
+</tr>
+{% endfor %}
 {% endfor %}
 </table>
 </form>

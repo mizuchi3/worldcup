@@ -61,11 +61,14 @@ def predict(request,userid=None):
 					prediction.save()
 					updates_made = True
 		predictions = Prediction.objects.filter(user=user)
+                allpredictions = Prediction.objects.all()
 		for game in games:
 			p = predictions.filter(game=game)
+			ap = allpredictions.filter(game=game)
 			if p.count()==1:
 				game.prediction = p[0]
 			game.open = game.match_date > dtime
+			game.allpredictions = ap
 	
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
 
