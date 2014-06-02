@@ -4,9 +4,12 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Sum
 from django.core.mail import send_mail
+from django.core.urlresolvers import resolve
+from django.db.transaction import commit_on_success
 from predictor.models import *
 import string,random,datetime
-from django.core.urlresolvers import resolve
+
+import time
 
 def register(request):
 	registered = False
@@ -36,6 +39,7 @@ http://bc2-login04.bc2.unibas.ch:8014/games/%s
 
 	return render(request, 'register.html', {'registered':registered})
 
+
 def predict(request,userid=None):
 	user = None
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
@@ -44,7 +48,8 @@ def predict(request,userid=None):
 	dtime = timezone.now()#+ datetime.timedelta(days=13)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
-        if userinfo.count()==1:
+	a = int(time.time()*1000)
+	if userinfo.count()==1:
 		request.session['userid'] = userid
 		user = userinfo[0].user
 		if request.method=='POST':
@@ -53,7 +58,7 @@ def predict(request,userid=None):
 				if key.endswith('_a'):
 					g_id = key[4:key.find('_')]
 					bkey = 'game%s_b' % g_id
-					game = Game.objects.get(id=g_id)
+					game = games.get(id=g_id)
 					if dtime < game.match_date:
 						prediction = Prediction.objects.get_or_create(user=user,
 								game=game)[0]
@@ -61,16 +66,18 @@ def predict(request,userid=None):
 						prediction.predict_b = request.POST.get(bkey)
 						prediction.save()
 						updates_made = True
+
+		a = int(time.time()*1000)
 		predictions = Prediction.objects.filter(user=user)
-                allpredictions = Prediction.objects.all()
+		allpredictions = Prediction.objects.all()
 		for game in games:
 			p = predictions.filter(game=game)
-			ap = allpredictions.filter(game=game)
+			ap = allpredictions.filter(game=game).exclude(user=user)
 			if p.count()==1:
 				game.prediction = p[0]
 			game.open = game.match_date > dtime
 			game.allpredictions = ap
-	
+
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
 
 def scores(request):

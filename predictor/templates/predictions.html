@@ -3,7 +3,7 @@
 Games / <a href="{% url 'predictor.views.scores' %}" class="navbar-link active" style="color:#BBB">Scores</a>
 <span class="pull-right">
 {% if user %}<span style="font-size:.5em">{{ user.first_name|default:user.username }}</span>
-<button class="btn btn-primary" role="button" onclick="$('#form').submit();">Save Updates</button>{% endif %}
+<button class="btn btn-primary" role="button" onclick="$(this).prop('disabled', true);$('#form').submit();">Save Updates</button>{% endif %}
 </span>
 {% endblock %}
 {% block maincontainer %}
