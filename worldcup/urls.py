@@ -8,4 +8,5 @@ urlpatterns = patterns('',
     url(r'^games/(?P<userid>[\w]+)?/?$', 'predictor.views.predict'),
     url(r'^register/?$','predictor.views.register'),
     url(r'^scores/?$','predictor.views.scores'),
+    url(r'^/?','predictor.views.register'),
 )

@@ -12,6 +12,9 @@ def register(request):
 	registered = False
 	if request.method == 'POST':
 		email = request.POST.get("email")
+                if len(email)<10:
+			return render(request, 'register.html', {'registered':registered})
+
 		newid = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
 		u = User.objects.get_or_create(username=email)
 		userinfo,created = UserInfo.objects.get_or_create(user=u[0])
@@ -24,12 +27,12 @@ def register(request):
 You will need to use the following link to make your predictions, if you feel
 you need to reset the link, just visit the registration page again.
 
-http://somewhere.com/games/%s
+http://bc2-login04.bc2.unibas.ch:8014/games/%s
 
 """ % (newid),
 		  'bc2_geeks@unibas.ch',
 		  [email],
-		  fail_silently=True)
+		  fail_silently=False)
 
 	return render(request, 'register.html', {'registered':registered})
 
@@ -38,10 +41,10 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now()#+ datetime.timedelta(days=18)
+	dtime = timezone.now()+ datetime.timedelta(days=13)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
-	if userinfo.count()==1:
+        if userinfo.count()==1:
 		request.session['userid'] = userid
 		user = userinfo[0].user
 		if request.method=='POST':
@@ -57,7 +60,6 @@ def predict(request,userid=None):
 					prediction.predict_b = request.POST.get(bkey)
 					prediction.save()
 					updates_made = True
-
 		predictions = Prediction.objects.filter(user=user)
 		for game in games:
 			p = predictions.filter(game=game)
