@@ -7,7 +7,11 @@ Games / <a href="{% url 'predictor.views.scores' %}" class="navbar-link active" 
 </span>
 {% endblock %}
 {% block maincontainer %}
-<style>.correct { background-color: #DFF0D8; border-color: #D6E9C6; }</style>
+<style>
+.correct { background-color: #DFF0D8; border-color: #D6E9C6; }
+.allpredictions{ display:none; font-size:.8em;}
+.allpredictions td{border-top:none}
+</style>
 
 {% if updates_made %}
 <div id="message" class="alert alert-success text-center">Updates were saved for {{ user.first_name|default:user.username }}</div>
@@ -19,26 +23,26 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 {% csrf_token %}
 <table class="table table-condensed table-hover">
 {% for game in games %}
-<tr onclick="$('.allpredictions{{ game.id}}').slideToggle('slow');" style="cursor:pointer">
-<td class="hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
-<td class="text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
+<tr id="{{game.id}}">
+<td class="ptoggle hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
+<td class="ptoggle text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
 
 {% if game.open %}
-<td class="text-center"><select name="game{{ game.id }}_a" id="game{{ game.id }}_a">{% for i in "xxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_a == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
+<td class="text-center ignoreToggle"><select name="game{{ game.id }}_a" id="game{{ game.id }}_a">{% for i in "xxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_a == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
 <td>v</td>
 <td class="text-center"><select name="game{{ game.id }}_b" >{% for i in "xxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_b == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
 {% else %}
-<td class="text-center{% if game.goals_a and game.prediction.predict_a == game.goals_a %} correct{% endif %}">({{ game.prediction.predict_a }}) {% if game.goals_a|yesno:"2,1," %}<strong>{{ game.goals_a }}</strong>{% endif %}</td>
+<td class="ptoggle text-center{% if game.goals_a and game.prediction.predict_a == game.goals_a %} correct{% endif %}">({{ game.prediction.predict_a }}) {% if game.goals_a|yesno:"2,1," %}<strong>{{ game.goals_a }}</strong>{% endif %}</td>
 <td> v </td>
-<td class="text-center{% if game.goals_b and game.prediction.predict_b == game.goals_b %} correct{% endif %}">{% if game.goals_b|yesno:"2,1," %}<strong>{{ game.goals_b }}</strong>{% endif %}
+<td class="ptoggle text-center{% if game.goals_b and game.prediction.predict_b == game.goals_b %} correct{% endif %}">{% if game.goals_b|yesno:"2,1," %}<strong>{{ game.goals_b }}</strong>{% endif %}
 	({{ game.prediction.predict_b }})</td>
 {% endif %}
 
-<td><label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
+<td ><label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
 <td title="points awarded">{% if game.prediction.points_awarded|yesno:"2,1," %}<strong>{{ game.prediction.points_awarded|floatformat:"0" }}</strong>{% endif %}</td>
 </tr>
 {% for p in game.allpredictions %}
-<tr class="allpredictions{{game.id}}" style="display:none">
+<tr class="allpredictions{{game.id}} allpredictions" style="display:none">
 <td class="hidden-xs"></td>
 <td clas="text-right">{{ p.user.first_name }}</td>
 <td class="text-center{% if game.goals_a and p.predict_a == game.goals_a %} correct{% endif %}">{{ p.predict_a }}</td>
@@ -51,5 +55,17 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 {% endfor %}
 </table>
 </form>
+
+<script>
+$(document).ready(
+	function()
+	{
+		$('.ptoggle').on('click',function(evt)
+				{
+					$('.allpredictions'+$( this ).closest('tr').attr('id')).slideToggle();
+				})
+			.css('cursor','pointer');
+	});
+</script>
 
 {% endblock %}
