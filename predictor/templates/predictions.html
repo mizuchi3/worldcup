@@ -28,9 +28,9 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 <td>v</td>
 <td class="text-center"><select name="game{{ game.id }}_b" >{% for i in "xxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_b == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
 {% else %}
-<td class="text-center{% if game.prediction.predict_a == game.goals_a %} correct{% endif %}">({{ game.prediction.predict_a }}) {% if game.goals_a|yesno:"2,1," %}<strong>{{ game.goals_a }}</strong>{% endif %}</td>
+<td class="text-center{% if game.goals_a and game.prediction.predict_a == game.goals_a %} correct{% endif %}">({{ game.prediction.predict_a }}) {% if game.goals_a|yesno:"2,1," %}<strong>{{ game.goals_a }}</strong>{% endif %}</td>
 <td> v </td>
-<td class="text-center{% if game.prediction.predict_b == game.goals_b %} correct{% endif %}">{% if game.goals_b|yesno:"2,1," %}<strong>{{ game.goals_b }}</strong>{% endif %}
+<td class="text-center{% if game.goals_b and game.prediction.predict_b == game.goals_b %} correct{% endif %}">{% if game.goals_b|yesno:"2,1," %}<strong>{{ game.goals_b }}</strong>{% endif %}
 	({{ game.prediction.predict_b }})</td>
 {% endif %}
 
@@ -41,9 +41,9 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 <tr class="allpredictions{{game.id}}" style="display:none">
 <td class="hidden-xs"></td>
 <td clas="text-right">{{ p.user.first_name }}</td>
-<td class="text-center{% if p.predict_a == game.goals_a %} correct{% endif %}">{{ p.predict_a }}</td>
+<td class="text-center{% if game.goals_a and p.predict_a == game.goals_a %} correct{% endif %}">{{ p.predict_a }}</td>
 <td></td>
-<td class="text-center{% if p.predict_b == game.goals_b %} correct{% endif %}">{{ p.predict_b }}</td>
+<td class="text-center{% if game.goals_b and p.predict_b == game.goals_b %} correct{% endif %}">{{ p.predict_b }}</td>
 <td></td>
 <td>{{ p.points_awarded|floatformat:"0" }}</td>
 </tr>
