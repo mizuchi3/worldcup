@@ -54,7 +54,7 @@ def predict(request,userid=None):
 					g_id = key[4:key.find('_')]
 					bkey = 'game%s_b' % g_id
 					game = Game.objects.get(id=g_id)
-					if game.match_date < dtime:
+					if dtime < game.match_date:
 						prediction = Prediction.objects.get_or_create(user=user,
 								game=game)[0]
 						prediction.predict_a = request.POST.get(key)
