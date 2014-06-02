@@ -41,7 +41,7 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now()+ datetime.timedelta(days=13)
+	dtime = timezone.now()#+ datetime.timedelta(days=13)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
         if userinfo.count()==1:
@@ -54,12 +54,13 @@ def predict(request,userid=None):
 					g_id = key[4:key.find('_')]
 					bkey = 'game%s_b' % g_id
 					game = Game.objects.get(id=g_id)
-					prediction = Prediction.objects.get_or_create(user=user,
+					if game.match_date < dtime:
+						prediction = Prediction.objects.get_or_create(user=user,
 								game=game)[0]
-					prediction.predict_a = request.POST.get(key)
-					prediction.predict_b = request.POST.get(bkey)
-					prediction.save()
-					updates_made = True
+						prediction.predict_a = request.POST.get(key)
+						prediction.predict_b = request.POST.get(bkey)
+						prediction.save()
+						updates_made = True
 		predictions = Prediction.objects.filter(user=user)
                 allpredictions = Prediction.objects.all()
 		for game in games:
