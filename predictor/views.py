@@ -55,19 +55,19 @@ def predict(request,userid=None):
 		user = userinfo[0].user
 		if request.method=='POST':
 			user = userinfo[0].user
-			with transaction.commit_on_success():
-				for key in request.POST.keys():
-					if key.endswith('_a'):
-						g_id = key[4:key.find('_')]
-						bkey = 'game%s_b' % g_id
-						game = games.get(id=g_id)
-						if dtime < game.match_date:
-							prediction = Prediction.objects.get_or_create(user=user,
-								game=game)[0]
-							prediction.predict_a = request.POST.get(key)
-							prediction.predict_b = request.POST.get(bkey)
-							prediction.save()
-							updates_made = True
+			#with transaction.commit_on_success():
+			for key in request.POST.keys():
+				if key.endswith('_a'):
+					g_id = key[4:key.find('_')]
+					bkey = 'game%s_b' % g_id
+					game = games.get(id=g_id)
+					if dtime < game.match_date:
+						prediction = Prediction.objects.get_or_create(user=user,
+							game=game)[0]
+						prediction.predict_a = request.POST.get(key)
+						prediction.predict_b = request.POST.get(bkey)
+						prediction.save()
+						updates_made = True
 
 	#print  int(time.time()*1000) -a
 	a = int(time.time()*1000)
