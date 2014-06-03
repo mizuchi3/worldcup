@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db.models import Sum
 from django.core.mail import send_mail
 from django.core.urlresolvers import resolve
+from django.db import transaction
 from django.db.transaction import commit_on_success
 from predictor.models import *
 import string,random,datetime
@@ -54,30 +55,32 @@ def predict(request,userid=None):
 		user = userinfo[0].user
 		if request.method=='POST':
 			user = userinfo[0].user
-			for key in request.POST.keys():
-				if key.endswith('_a'):
-					g_id = key[4:key.find('_')]
-					bkey = 'game%s_b' % g_id
-					game = games.get(id=g_id)
-					if dtime < game.match_date:
-						prediction = Prediction.objects.get_or_create(user=user,
+			with transaction.commit_on_success():
+				for key in request.POST.keys():
+					if key.endswith('_a'):
+						g_id = key[4:key.find('_')]
+						bkey = 'game%s_b' % g_id
+						game = games.get(id=g_id)
+						if dtime < game.match_date:
+							prediction = Prediction.objects.get_or_create(user=user,
 								game=game)[0]
-						prediction.predict_a = request.POST.get(key)
-						prediction.predict_b = request.POST.get(bkey)
-						prediction.save()
-						updates_made = True
+							prediction.predict_a = request.POST.get(key)
+							prediction.predict_b = request.POST.get(bkey)
+							prediction.save()
+							updates_made = True
 
-		a = int(time.time()*1000)
-		predictions = Prediction.objects.filter(user=user)
-		allpredictions = Prediction.objects.all()
-		for game in games:
-			p = predictions.filter(game=game)
-			ap = allpredictions.filter(game=game).exclude(user=user)
-			if p.count()==1:
-				game.prediction = p[0]
-			game.open = game.match_date > dtime
-			game.allpredictions = ap
-
+	#print  int(time.time()*1000) -a
+	a = int(time.time()*1000)
+	predictions = Prediction.objects.filter(user=user)
+	allpredictions = Prediction.objects.all()
+	for game in games:
+		p = predictions.filter(game=game)
+		ap = allpredictions.filter(game=game).exclude(user=user)
+		if p.count()==1:
+			game.prediction = p[0]
+		game.open = user is not None and game.match_date > dtime
+	 	game.allpredictions = ap
+	#print int(time.time()*1000) -a
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
 
 def scores(request):
