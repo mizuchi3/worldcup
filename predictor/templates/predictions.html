@@ -65,6 +65,8 @@ $(document).ready(
 					$('.allpredictions'+$( this ).closest('tr').attr('id')).slideToggle();
 				})
 			.css('cursor','pointer');
+               if($('select').length>0)
+	       	window.scrollTo(0,$('select').first().position().top -60);
 	});
 </script>
 
