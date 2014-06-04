@@ -46,10 +46,9 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now()#+ datetime.timedelta(days=13)
+	dtime = timezone.now()
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
-	a = int(time.time()*1000)
 	if userinfo.count()==1:
 		request.session['userid'] = userid
 		user = userinfo[0].user
@@ -69,18 +68,16 @@ def predict(request,userid=None):
 						prediction.save()
 						updates_made = True
 
-	#print  int(time.time()*1000) -a
-	a = int(time.time()*1000)
 	predictions = Prediction.objects.filter(user=user)
 	allpredictions = Prediction.objects.all()
+	endtime = "2014-06-28"
 	for game in games:
 		p = predictions.filter(game=game)
 		ap = allpredictions.filter(game=game).exclude(user=user)
 		if p.count()==1:
 			game.prediction = p[0]
-		game.open = user is not None and game.match_date > dtime
+		game.open = user is not None and dtime < game.match_date and game.match_date.strftime('%Y-%m-%d') < endtime 
 	 	game.allpredictions = ap
-	#print int(time.time()*1000) -a
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
 
 def scores(request):
