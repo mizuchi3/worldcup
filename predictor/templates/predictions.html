@@ -23,6 +23,32 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 {% csrf_token %}
 <table class="table table-condensed table-hover">
 {% for game in games %}
+{% if game.id == 49 %}
+<tr><td colspan="20">
+	ROUND OF 16
+</td>
+</tr>{% endif %}
+{% if game.id == 57 %}
+<tr><td colspan="20">
+	QUARTER FINALS
+</td>
+</tr>{% endif %}
+{% if game.id == 61 %}
+<tr><td colspan="20">
+	SEMI FINALS
+</td>
+</tr>{% endif %}
+{% if game.id == 63 %}
+<tr><td colspan="20">
+	PLAY-OFF FOR THIRD PLACE
+</td>
+</tr>{% endif %}
+{% if game.id == 64 %}
+<tr><td colspan="20">
+	FINAL
+</td>
+</tr>{% endif %}
+
 <tr id="{{game.id}}">
 <td class="ptoggle hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
 <td class="ptoggle text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
