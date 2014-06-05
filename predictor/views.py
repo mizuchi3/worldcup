@@ -46,7 +46,7 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now()
+	dtime = timezone.now()+ datetime.timedelta(days=10)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
 	if userinfo.count()==1:
@@ -70,12 +70,16 @@ def predict(request,userid=None):
 
 	predictions = Prediction.objects.filter(user=user)
 	allpredictions = Prediction.objects.all()
-	endtime = "2014-06-28"
+	endtime =  "2014-06-28"#"2014-07-04""2014-07-08""2014-07-10""2014-07-13"
 	for game in games:
 		p = predictions.filter(game=game)
 		ap = allpredictions.filter(game=game).exclude(user=user)
 		if p.count()==1:
 			game.prediction = p[0]
+			game.outcome = outcome(p[0].predict_a,p[0].predict_b,game.goals_a,game.goals_b)
+
+		for pp in ap:
+			pp.outcome = outcome(pp.predict_a,pp.predict_b,game.goals_a,game.goals_b)
 		game.open = user is not None and dtime < game.match_date and game.match_date.strftime('%Y-%m-%d') < endtime 
 	 	game.allpredictions = ap
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
@@ -90,13 +94,10 @@ def scores(request):
 			s += 2
 		if p.predict_b==p.game.goals_b:
 			s += 2
-		if p.predict_a>p.predict_b and p.game.goals_a>p.game.goals_b:
-			s+=3
-		if p.predict_b>p.predict_a and p.game.goals_b>p.game.goals_a:
-			s+=3
-		if p.predict_a==p.predict_b and p.game.goals_a==p.game.goals_b:
-			s+=3
 
+		if outcome(p.predict_a,p.predict_b,p.game.goals_a,p.game.goals_b):
+			s+=3
+	
 		p.points_awarded = s
 		p.save()
 
@@ -108,6 +109,18 @@ def scores(request):
 
 	return render(request, 'scores.html', {'users':users,'userid':userid})
 
+def outcome(pA,pB,gA,gB):
+
+	if pA is None or pB is None or gA is None or gB is None:
+		return None
+	if pA>pB and gA>gB:
+		return True
+	if pB>pA and gB>gA:
+		return True
+	if pA==pB and gA==gB:
+		return True
+
+	return False
 
 
 

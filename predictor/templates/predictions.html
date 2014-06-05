@@ -8,9 +8,10 @@ Games / <a href="{% url 'predictor.views.scores' %}" class="navbar-link active" 
 {% endblock %}
 {% block maincontainer %}
 <style>
-.correct { background-color: #DFF0D8; border-color: #D6E9C6; }
+.correctOutcome  td{ background-color: #DFEED8; border-color: #D6E9C6; }
+.correctGoals { background-color: #ACF0B7 !important;  border-color: #D6E9C6 !important; }
 .allpredictions{ display:none; font-size:.8em;}
-.allpredictions td{border-top:none}
+.allpredictions td{border-top:none !important; padding:2px !important;}
 </style>
 
 {% if updates_made %}
@@ -21,7 +22,7 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 {% endif %}
 <form method="post" id="form" autocomplete="off" >
 {% csrf_token %}
-<table class="table table-condensed table-hover">
+<table class="table table-condensed Xtable-hover">
 {% for game in games %}
 {% if game.id == 49 %}
 <tr><td colspan="20">
@@ -49,7 +50,7 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 </td>
 </tr>{% endif %}
 
-<tr id="{{game.id}}">
+<tr id="{{game.id}}" class="{% if game.outcome %} correctOutcome {% endif %}">
 <td class="ptoggle hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
 <td class="ptoggle text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
 
@@ -58,30 +59,30 @@ setTimeout(function(){$('#message').slideToggle('slow');},3000);
 <td>v</td>
 <td class="text-center"><select name="game{{ game.id }}_b" >{% for i in "xxxxxxxxxx" %}<option value="{{ forloop.counter0 }}" {% if game.prediction.predict_b == forloop.counter0 %}selected="selected"{% endif %}>{{ forloop.counter0 }}</option>{% endfor %}</select></td>
 {% else %}
-{% if games.goals_a %}
-<td class="ptoggle text-center{% if game.prediction.predict_a == game.goals_a %} correct{% endif %}">({{ game.prediction.predict_a }}) <strong>{{ game.goals_a }}</strong></td>
+{% if game.prediction.predict_a > -1 %}
+
+<td class="ptoggle text-center{% if game.prediction.predict_a == game.goals_a %} correctGoals{% endif %}">({{ game.prediction.predict_a }}) {{ outcome }}<strong>{{ game.goals_a|default_if_none:"-" }}</strong></td>
 <td> v </td>
-<td class="ptoggle text-center{% if game.prediction.predict_b == game.goals_b %} correct{% endif %}"><strong>{{ game.goals_b }}</strong> ({{ game.prediction.predict_b }})</td>
+<td class="ptoggle text-center{% if game.prediction.predict_b == game.goals_b %} correctGoals{% endif %}"><strong>{{ game.goals_b|default_if_none:"-" }}</strong> ({{ game.prediction.predict_b }})</td>
+
 {% else %}
-
-<td class="ptoggle text-center"></td>
+<td class="ptoggle text-center}"><strong>{{ game.goals_a|default_if_none:"-" }}</strong></td>
 <td> v </td>
-<td class="ptoggle text-center"></td>
-
-
-{% endif %}
+<td class="ptoggle text-center"><strong>{{ game.goals_b|default_if_none:"-" }}</strong></td>
 {% endif %}
 
-<td ><label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
+{% endif %}
+
+<td > <label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
 <td title="points awarded">{% if game.prediction.points_awarded|yesno:"2,1," %}<strong>{{ game.prediction.points_awarded|floatformat:"0" }}</strong>{% endif %}</td>
 </tr>
 {% for p in game.allpredictions %}
-<tr class="allpredictions{{game.id}} allpredictions" style="display:none">
+<tr class="allpredictions{{game.id}} allpredictions{% if p.outcome %} correctOutcome {% endif %}" style="display:none">
 <td class="hidden-xs"></td>
 <td clas="text-right">{{ p.user.first_name }}</td>
-<td class="text-center{% if game.goals_a and p.predict_a == game.goals_a %} correct{% endif %}">{{ p.predict_a }}</td>
+<td class="text-center{% if p.predict_a == game.goals_a %} correctGoals{% endif %}">{{ p.predict_a }}</td>
 <td></td>
-<td class="text-center{% if game.goals_b and p.predict_b == game.goals_b %} correct{% endif %}">{{ p.predict_b }}</td>
+<td class="text-center{% if p.predict_b == game.goals_b %} correctGoals{% endif %}">{{ p.predict_b }}</td>
 <td></td>
 <td>{{ p.points_awarded|floatformat:"0" }}</td>
 </tr>
@@ -100,7 +101,7 @@ $(document).ready(
 				})
 			.css('cursor','pointer');
                if($('select').length>0)
-	       	window.scrollTo(0,$('select').first().position().top -60);
+	       	window.scrollTo(0,$('select').first().position().top -70);
 	});
 </script>
 
