@@ -103,11 +103,53 @@ def scores(request):
 
 	users = User.objects.annotate(points=Sum('prediction__points_awarded')).order_by('-points')
 
+	user_rankings = {}
+	games = Game.objects.filter(goals_a__isnull=False).order_by('match_date')
+	for game in games:
+		predictions = Prediction.objects.filter(game=game, points_awarded__isnull=False)
+		latest_rank_list = []
+		latest_rank_set = set()
+
+		if predictions.count()>0:
+			for p in predictions:
+				if p.user.username not in user_rankings.keys():
+					user_rankings[p.user.username] = {'first_name':p.user.first_name,'predictions':[], 'points_total':[],'data':[]}
+
+				user_ranking = user_rankings[p.user.username]
+				total = p.points_awarded
+				if len(user_ranking['points_total'])>0:
+					total += user_ranking['points_total'][-1]
+
+				total = int(total)
+				user_ranking['predictions'].append(p)
+				user_ranking['points_total'].append(total)
+				latest_rank_list.append(total)
+				latest_rank_set.add(total)
+
+		latest_rank_set = list(latest_rank_set)
+		latest_rank_set.sort()
+		latest_rank_set.reverse()
+		
+		for u in user_rankings:
+			t = user_rankings[u]['points_total'][-1]
+			r = 1
+			for i in latest_rank_set:
+				if t==i:
+					user_rankings[u]['data'].append(
+								{'rank':r,
+								'prediction':user_rankings[u]['predictions'][len(user_rankings[u]['data'])],
+								'total':t})
+					break
+
+				r += latest_rank_list.count(i)
+
+
+
 	userid = ''
 	if 'userid' in request.session.keys():
 		userid = request.session['userid']
 
-	return render(request, 'scores.html', {'users':users,'userid':userid})
+	return render(request, 'scores.html', {'userid':userid,'users':users, 'games':games,'user_rankings':user_rankings})
 
 def outcome(pA,pB,gA,gB):
 

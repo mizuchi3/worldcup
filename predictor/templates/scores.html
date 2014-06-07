@@ -1,19 +1,84 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load static %}
 {% block section-title %}
+<script src="{% static 'js/highcharts.js' %}"></script>
 <a href="{% url 'predictor.views.predict' userid=userid %}" class="navbar-link active" style="color:#BBB">Games</a> / Scores
 <span class="pull-right">
 </span>
 {% endblock %}
 {% block maincontainer %}
 
-<table class=table>
+
+<div id="container" style="width:100%; height:500px;"></div>
+
+
+<table class="table table-condensed">
+<tr><th>Name</th><th>Total Score</th></tr>
 {% for u in users %}
 <tr>
-	<td>{{ u.first_name|default:u.username }}</td><td>{{ u.points|floatformat:"0" }}</td>
+    <td>{{ u.predictions }} {{ u.first_name|default:u.username }} </td><td>{{ u.points|floatformat:"0"|default:"-" }}</td>
 </tr>
 {% endfor %}
 </table>
 
 
+
+<script>
+$(function () {
+        $('#container').highcharts({
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Current Rankings'
+            },
+            subtitle: {
+                text: 'BC2_geeks World Cup 2014'
+            },
+            xAxis: {
+                categories: [
+                    {% for g in games %}
+                    '{{ g.team_a }} {{ g.team_b }}<br>{{ g.goals_a }} - {{ g.goals_b }}'
+                    {% if not forloop.last %},{% endif%}
+                    {% endfor %}],
+                labels: { rotation: 0 }
+            },
+            yAxis: {
+                title: {
+                    text: 'Rank'
+                },
+                reversed:true,
+                labels:{ enabled:false }
+            },
+            plotOptions: {
+                line: {
+                    tooltip: { valuePrefix: 'Rank: '},  
+                    enableMouseTracking: true
+                }
+            },
+             tooltip: {
+            formatter: function() {
+                return '<b>'+this.series.name 
+                    + '</b><br>Rank : ' +this.y
+                    +'<br>'+ this.point.name ;
+            }
+        },
+            series: [{% for user,obj in user_rankings.items %}{
+                name: '{{ obj.first_name }}',
+                data: [
+
+                    {% for d in obj.data %}
+                       { name: 'Prediction: {{ d.prediction.predict_a }} - {{ d.prediction.predict_b }}'
+                            +'<br>Match Points: {{ d.prediction.points_awarded|floatformat:"0" }}'
+                            +'<br>Total Score: {{ d.total }}', y: {{ d.rank }}, }
+
+                        {% if not forloop.last %}
+
+                    ,{% endif %}{% endfor %}
+
+                    ]
+            }{% if not forloop.last %},{% endif %}{% endfor %}]
+        });
+    });
+</script>
 
 {% endblock %}
