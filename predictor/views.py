@@ -46,7 +46,7 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now()+ datetime.timedelta(days=10)
+	dtime = timezone.now() #+ datetime.timedelta(days=10)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
 	if userinfo.count()==1:
@@ -101,7 +101,7 @@ def scores(request):
 		p.points_awarded = s
 		p.save()
 
-	users = User.objects.annotate(points=Sum('prediction__points_awarded')).order_by('-points')
+	users = User.objects.annotate(points=Sum('prediction__points_awarded')).order_by('-points','first_name')
 
 	user_rankings = {}
 	games = Game.objects.filter(goals_a__isnull=False).order_by('match_date')
