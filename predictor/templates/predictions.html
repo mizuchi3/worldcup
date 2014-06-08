@@ -97,7 +97,7 @@ $(document).ready(
 	{
 		$('.ptoggle').on('click',function(evt)
 				{
-					$('.allpredictions'+$( this ).closest('tr').attr('id')).slideToggle();
+					$('.allpredictions'+$( this ).closest('tr').attr('id')).toggle();
 				})
 			.css('cursor','pointer');
                if($('select').length>0)

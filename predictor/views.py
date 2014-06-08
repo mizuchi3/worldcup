@@ -46,7 +46,7 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now() #+ datetime.timedelta(days=10)
+	dtime = timezone.now()# + datetime.timedelta(days=60)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
 	if userinfo.count()==1:
@@ -70,7 +70,7 @@ def predict(request,userid=None):
 
 	predictions = Prediction.objects.filter(user=user)
 	allpredictions = Prediction.objects.all()
-	endtime =  "2014-06-28"#"2014-07-04""2014-07-08""2014-07-10""2014-07-13"
+	endtime =  "2014-06-27"#"2014-07-04""2014-07-08""2014-07-10""2014-07-13"
 	for game in games:
 		p = predictions.filter(game=game)
 		ap = allpredictions.filter(game=game).exclude(user=user)
@@ -102,54 +102,68 @@ def scores(request):
 		p.save()
 
 	users = User.objects.annotate(points=Sum('prediction__points_awarded')).order_by('-points','first_name')
-
 	user_rankings = {}
 	games = Game.objects.filter(goals_a__isnull=False).order_by('match_date')
+	game_idx = 0
+	max_rank = 0
+	game_count = games.count()
 	for game in games:
-		predictions = Prediction.objects.filter(game=game, points_awarded__isnull=False)
+		predictions = Prediction.objects.filter(game=game,points_awarded__isnull=False)
 		latest_rank_list = []
 		latest_rank_set = set()
 
 		if predictions.count()>0:
 			for p in predictions:
 				if p.user.username not in user_rankings.keys():
-					user_rankings[p.user.username] = {'first_name':p.user.first_name,'predictions':[], 'points_total':[],'data':[]}
+					user_rankings[p.user.username] = {'first_name':p.user.first_name,
+						'predictions':[None] * game_count,
+						'points_total':[None] * game_count,
+						'data':[None] * game_count}
 
 				user_ranking = user_rankings[p.user.username]
 				total = p.points_awarded
-				if len(user_ranking['points_total'])>0:
-					total += user_ranking['points_total'][-1]
+				if game_idx>0:
+					for x in range(game_idx,-1,-1):
+						if user_ranking['points_total'][x]:
+							total += user_ranking['points_total'][x]
+							break
 
 				total = int(total)
-				user_ranking['predictions'].append(p)
-				user_ranking['points_total'].append(total)
+				user_ranking['predictions'][game_idx] = p
+				user_ranking['points_total'][game_idx] = total
 				latest_rank_list.append(total)
 				latest_rank_set.add(total)
 
 		latest_rank_set = list(latest_rank_set)
 		latest_rank_set.sort()
 		latest_rank_set.reverse()
-		
+
 		for u in user_rankings:
-			t = user_rankings[u]['points_total'][-1]
+			t = user_rankings[u]['points_total'][game_idx]
 			r = 1
 			for i in latest_rank_set:
 				if t==i:
-					user_rankings[u]['data'].append(
-								{'rank':r,
-								'prediction':user_rankings[u]['predictions'][len(user_rankings[u]['data'])],
-								'total':t})
+					if r>max_rank:
+						max_rank = r
+					user_rankings[u]['data'][game_idx] = {'rank':r,
+								'game':game,
+								'prediction':user_rankings[u]['predictions'][game_idx],
+								'total':t}
 					break
 
 				r += latest_rank_list.count(i)
 
-
+		game_idx += 1
 
 	userid = ''
 	if 'userid' in request.session.keys():
 		userid = request.session['userid']
 
-	return render(request, 'scores.html', {'userid':userid,'users':users, 'games':games,'user_rankings':user_rankings})
+	return render(request, 'scores.html', {'userid':userid,
+									'users':users,
+									'max_rank':max_rank, 
+									'games':games,
+									'user_rankings':user_rankings})
 
 def outcome(pA,pB,gA,gB):
 
