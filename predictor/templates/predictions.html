@@ -53,7 +53,7 @@ setTimeout(function(){$('#message').fadeOut('slow');},3000);
 </tr>{% endif %}
 
 <tr id="{{game.id}}" class="{% if game.outcome %} correctOutcome {% endif %}">
-<td class="ptoggle hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date }}</td>
+<td class="ptoggle hidden-xs" style="font-size:.8em;color:#444">{{ game.match_date|date:"D jS F, P" }}</td>
 <td class="ptoggle text-right"><label for="game{{ game.id }}_a">{{ game.team_a }}</label></td>
 
 {% if game.open %}
