@@ -78,6 +78,8 @@ setTimeout(function(){$('#message').fadeOut('slow');},3000);
 <td > <label for="game{{ game.id }}_b">{{ game.team_b }}</label></td>
 <td title="points awarded">{% if game.prediction.points_awarded|yesno:"2,1," %}<strong>{{ game.prediction.points_awarded|floatformat:"0" }}</strong>{% endif %}</td>
 </tr>
+
+{% if game.outcome %}
 {% for p in game.allpredictions %}
 <tr class="allpredictions{{game.id}} allpredictions{% if p.outcome %} correctOutcome {% endif %}" style="display:none">
 <td class="hidden-xs"></td>
@@ -89,6 +91,7 @@ setTimeout(function(){$('#message').fadeOut('slow');},3000);
 <td>{{ p.points_awarded|floatformat:"0" }}</td>
 </tr>
 {% endfor %}
+{% endif %}
 {% endfor %}
 </table>
 </form>
