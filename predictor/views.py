@@ -46,7 +46,7 @@ def predict(request,userid=None):
 	userinfo = UserInfo.objects.filter(keyphrase=userid)
 	keyphrase = None
 	predictions=None
-	dtime = timezone.now()# + datetime.timedelta(days=60)
+	dtime = timezone.now() + datetime.timedelta(hours=2)
 	games = Game.objects.all().order_by('match_date')
 	updates_made = False
 	if userinfo.count()==1:
@@ -81,7 +81,8 @@ def predict(request,userid=None):
 		for pp in ap:
 			pp.outcome = outcome(pp.predict_a,pp.predict_b,game.goals_a,game.goals_b)
 		game.open = user is not None and dtime < game.match_date and game.match_date.strftime('%Y-%m-%d') < endtime 
-	 	game.allpredictions = ap
+	 	game.started = dtime > game.match_date
+		game.allpredictions = ap
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
 
 def scores(request):

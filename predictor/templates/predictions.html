@@ -10,7 +10,7 @@ setTimeout(function(){$('#message').fadeOut('slow');},3000);
 </script>
 {% endif %}
 {% if user %}<span style="font-size:.5em">{{ user.first_name|default:user.username }}</span>
-<button class="btn btn-primary" role="button" onclick="$(this).prop('disabled', true);$('#form').submit();">Save Updates</button>{% endif %}
+<button class="btn btn-primary" type="button" onclick="$(this).prop('disabled', true);$('#form').submit();">Save Updates</button>{% endif %}
 </span>
 {% endblock %}
 {% block maincontainer %}
@@ -79,7 +79,7 @@ setTimeout(function(){$('#message').fadeOut('slow');},3000);
 <td title="points awarded">{% if game.prediction.points_awarded|yesno:"2,1," %}<strong>{{ game.prediction.points_awarded|floatformat:"0" }}</strong>{% endif %}</td>
 </tr>
 
-{% if game.outcome %}
+{% if game.started %}
 {% for p in game.allpredictions %}
 <tr class="allpredictions{{game.id}} allpredictions{% if p.outcome %} correctOutcome {% endif %}" style="display:none">
 <td class="hidden-xs"></td>
