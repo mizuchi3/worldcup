@@ -95,9 +95,10 @@ def scores(request):
 			s += 2
 		if p.predict_b==p.game.goals_b:
 			s += 2
-
+		if p.predict_a-p.predict_b == p.game.goals_a-p.game.goals_b:
+			s += 3
 		if outcome(p.predict_a,p.predict_b,p.game.goals_a,p.game.goals_b):
-			s+=3
+			s += 3
 	
 		p.points_awarded = s
 		p.save()
