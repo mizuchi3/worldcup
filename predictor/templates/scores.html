@@ -11,7 +11,9 @@
 {% if games %}
 <div id="container" style="width:100%; height:400px;"></div>
 {% endif %}
-
+<p class="text-center" style="margin-bottom:16px">
+<button type="button" class="btn btn-primary" onclick="toggle();">Toggle All</button>
+</p>
 <table class="table table-condensed">
 <tr><th>Name</th><th>Total Score</th></tr>
 {% for u in users %}<tr><td>{{ u.predictions }} {{ u.first_name|default:u.username }} </td><td>{{ u.points|floatformat:"0"|default:"-" }}</td></tr>{% endfor %}
@@ -19,9 +21,25 @@
 
 
 <script>
+function toggle()
+{
+	var _redraw = chart.redraw;
+	chart.redraw = function(){};	
+	for(s in $('#container').highcharts().series)
+	{
+    	if($('#container').highcharts().series[s].visible)
+       	 $('#container').highcharts().series[s].hide()
+    	else
+        	$('#container').highcharts().series[s].show()
+	}
+	chart.redraw = _redraw;
+	chart.redraw();
+}
+
+var chart;
 $(function () {
-        $('#container').highcharts({
-            chart: {   type: 'line'    },
+        chart = new Highcharts.Chart({
+            chart: {   type: 'line', renderTo:'container'    },
             title: {   text: 'Current Rankings'   },
             xAxis: {
                 categories: [
