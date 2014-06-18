@@ -42,9 +42,9 @@ $(function () {
             chart: {   type: 'line', renderTo:'container'    },
             title: {   text: 'Current Rankings'   },
             xAxis: {
-                categories: [
-                    {% for g in games %}'{{ g.team_a }} {{ g.team_b }}'{% if not forloop.last %},{% endif%}{% endfor %}],
-               // labels: { enabled:false }//rotation: 0 }
+            //    categories: [
+            //        {% for g in games %}'{{ g.team_a }} {{ g.team_b }}'{% if not forloop.last %},{% endif%}{% endfor %}],
+                labels: { enabled:false }//rotation: 0 }
             },
             yAxis: {
                 title: {     text: 'Rank'   },
