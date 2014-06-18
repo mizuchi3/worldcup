@@ -9,7 +9,7 @@
 
 
 {% if games %}
-<div id="container" style="width:100%; height:400px;"></div>
+<div id="container" style="width:100%; height:500px;"></div>
 {% endif %}
 <p class="text-center" style="margin-bottom:16px">
 <button type="button" class="btn btn-primary" onclick="toggle();">Toggle All</button>
@@ -39,7 +39,7 @@ function toggle()
 var chart;
 $(function () {
         chart = new Highcharts.Chart({
-            chart: {   type: 'line', renderTo:'container'    },
+            chart: {   zoomType:'x',type: 'line', renderTo:'container'    },
             title: {   text: 'Current Rankings'   },
             xAxis: {
             //    categories: [
