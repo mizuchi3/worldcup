@@ -70,7 +70,7 @@ def predict(request,userid=None):
 
 	predictions = Prediction.objects.filter(user=user)
 	allpredictions = Prediction.objects.all()
-	endtime =  "2014-06-27"#"2014-07-04""2014-07-08""2014-07-10""2014-07-13"
+	endtime =  "014-06-30"#"2014-07-04""2014-07-08""2014-07-10""2014-07-13"
 	for game in games:
 		p = predictions.filter(game=game)
 		ap = allpredictions.filter(game=game).exclude(user=user).order_by('user__first_name')
@@ -81,6 +81,8 @@ def predict(request,userid=None):
 		for pp in ap:
 			pp.outcome = outcome(pp.predict_a,pp.predict_b,game.goals_a,game.goals_b)
 		game.open = user is not None and dtime < game.match_date and game.match_date.strftime('%Y-%m-%d') < endtime 
+
+		print game.team_a,game.team_b,game.open,dtime,game.match_date.strftime('%Y-%m-%d'),endtime,game.match_date.strftime('%Y-%m-%d')<endtime
 	 	game.started = dtime > game.match_date
 		game.allpredictions = ap
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
@@ -104,6 +106,10 @@ def scores(request):
 		p.save()
 
 	users = User.objects.annotate(points=Sum('prediction__points_awarded')).order_by('-points','first_name')
+	for u in users:
+		userinfo = UserInfo.objects.get(user=u)
+		u.paid = userinfo.paid
+
 	user_rankings = {}
 	games = Game.objects.filter(goals_a__isnull=False).order_by('match_date')
 	game_idx = 0

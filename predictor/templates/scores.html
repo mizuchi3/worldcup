@@ -1,5 +1,6 @@
 {% extends 'base.html' %}{% load static %}
 {% block section-title %}
+<style>.not_paid td{ font-style:italic; color:rgba(80,80,80,.6); }</style>
 <script src="{% static 'js/highcharts.js' %}"></script>
 <a href="{% url 'predictor.views.predict' userid=userid %}" class="navbar-link active" style="color:#BBB">Games</a> / Scores
 <span class="pull-right">
@@ -16,7 +17,7 @@
 </p>
 <table class="table table-condensed">
 <tr><th>Name</th><th>Total Score</th></tr>
-{% for u in users %}<tr><td>{{ u.predictions }} {{ u.first_name|default:u.username }} </td><td>{{ u.points|floatformat:"0"|default:"-" }}</td></tr>{% endfor %}
+{% for u in users %}<tr {% if not u.paid %}class="not_paid"{% endif %}><td>{{ u.first_name|default:u.username }} </td><td>{{ u.points|floatformat:"0"|default:"-" }}</td></tr>{% endfor %}
 </table>
 
 
