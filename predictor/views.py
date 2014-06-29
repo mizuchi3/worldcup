@@ -142,6 +142,25 @@ def scores(request):
 				latest_rank_list.append(total)
 				latest_rank_set.add(total)
 
+			for u in users:
+				if u.username in user_rankings.keys() and user_rankings[u.username]['predictions'][game_idx] is None:
+					user_ranking = user_rankings[u.username]
+					total = 0
+					if game_idx>0:
+						for x in range(game_idx,-1,-1):
+							if user_ranking['points_total'][x]:
+								total += user_ranking['points_total'][x]
+								break
+
+					total = int(total)
+					p = { 'game':game, 'predict_a':'', 'predict_b':'','points_awarded':0 }
+					user_ranking['predictions'][game_idx] = p
+					user_ranking['points_total'][game_idx] = total
+					latest_rank_list.append(total)
+					latest_rank_set.add(total)
+
+
+
 		latest_rank_set = list(latest_rank_set)
 		latest_rank_set.sort()
 		latest_rank_set.reverse()
