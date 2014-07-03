@@ -82,7 +82,6 @@ def predict(request,userid=None):
 			pp.outcome = outcome(pp.predict_a,pp.predict_b,game.goals_a,game.goals_b)
 		game.open = user is not None and dtime < game.match_date and game.match_date.strftime('%Y-%m-%d') < endtime 
 
-		print game.team_a,game.team_b,game.open,dtime,game.match_date.strftime('%Y-%m-%d'),endtime,game.match_date.strftime('%Y-%m-%d')<endtime
 	 	game.started = dtime > game.match_date
 		game.allpredictions = ap
 	return render(request, 'predictions.html', {'user':user,'games':games, 'updates_made':updates_made})
